@@ -1,6 +1,5 @@
 package com.project.StudentManagement.domain.service.impl;
 
-import com.project.StudentManagement.domain.dao.SubjectGradesRepository;
 import com.project.StudentManagement.domain.dto.StudentDTO;
 import com.project.StudentManagement.domain.dto.SubjectGradesDTO;
 import com.project.StudentManagement.domain.entity.Student;
@@ -8,11 +7,12 @@ import com.project.StudentManagement.domain.entity.SubjectGrades;
 import com.project.StudentManagement.domain.dao.StudentRepository;
 import com.project.StudentManagement.domain.identity.StudentIdentity;
 import com.project.StudentManagement.domain.service.StudentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,35 +20,34 @@ import java.util.stream.Collectors;
 @Service
 public class StudentServiceImpl implements StudentService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StudentServiceImpl.class);
+
     @Autowired
     StudentRepository studentRepository;
 
     @Override
-    public List<StudentDTO> view(Long studentNumber) {
-        Student student = studentRepository.findByIdStudentNumber(studentNumber)
+    public StudentDTO view(Long studentNumber) {
+        Student student = studentRepository.findByIdStudentNumberId(studentNumber)
                 .orElseThrow(() -> new IllegalStateException("Student #" + studentNumber + " doesn't exist!"));
 
         StudentDTO studentDTO = new StudentDTO();
-        studentDTO.setStudentId(student.getStudentId());
-        studentDTO.setStudentNumber(student.getStudentId().getStudentNumberID());
+        studentDTO.setId(student.getId());
+        studentDTO.setStudentNumber(student.getId().getStudentNumberId());
         studentDTO.setMaskName(student.getMaskName());
         studentDTO.setFirstName(student.getFirstName());
         studentDTO.setLastName(student.getLastName());
         studentDTO.setMiddleName(student.getMiddleName());
         studentDTO.setSubjectsGrades(student.getSubjectGrades());
 
-        List<StudentDTO> viewStudent = new ArrayList<>();
-        viewStudent.add(studentDTO);
-
-        return viewStudent;
+        return studentDTO;
     }
 
     @Override
     public List<StudentDTO> list() {
         return studentRepository.findAll().stream().map(student -> {
             StudentDTO dto = new StudentDTO();
-            dto.setStudentId(student.getStudentId());
-            dto.setStudentNumber(student.getStudentId().getStudentNumberID());
+            dto.setId(student.getId());
+            dto.setStudentNumber(student.getId().getStudentNumberId());
             dto.setMaskName(student.getMaskName());
             dto.setFirstName(student.getFirstName());
             dto.setLastName(student.getLastName());
@@ -60,34 +59,28 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO create(StudentDTO studentDTO) throws Exception {
-        boolean isPresent = Optional.ofNullable(studentRepository.findByIdStudentNumber(studentDTO.getStudentNumber())).isPresent();
+        Optional<Student> createStudent = studentRepository.findByIdStudentNumberId(studentDTO.getStudentNumber());
 
-        if (isPresent) throw new Exception("Student #" + studentDTO.getStudentId().getStudentNumberID() + " already exists");
-        else {
-            Student student = new Student();
-//            student.setStudentNumber(studentDTO.getStudentNumber());
-            student.setMaskName(studentDTO.getMaskName());
-            student.setFirstName(studentDTO.getFirstName());
-            student.setLastName(studentDTO.getLastName());
-            student.setMiddleName(studentDTO.getMiddleName());
-            student.setSchool(studentDTO.getSchool());
-
-            student = studentRepository.save(
-                    new Student(new StudentIdentity(studentDTO.getStudentNumber(), "sa"),
+        LOGGER.info("Please check this " + createStudent);
+        if (createStudent.isPresent()) {
+            throw new Exception("Student already exists");
+        } else {
+            Student student = studentRepository.save(
+                    new Student(new StudentIdentity(studentDTO.getStudentNumber(), "-NULL-"),
                             studentDTO.getMaskName(),
                             studentDTO.getFirstName(),
                             studentDTO.getLastName(),
                             studentDTO.getMiddleName(),
-                            studentDTO.getSchool())
-            );
-            studentDTO.setStudentId(student.getStudentId());
+                            null
+            ));
+            studentDTO.setId(student.getId());
         }
         return studentDTO;
     }
 
     @Override
     public StudentDTO update(StudentDTO studentDTO) throws Exception {
-        Student student = studentRepository.findByIdStudentNumber(studentDTO.getStudentId().getStudentNumberID())
+        Student student = studentRepository.findByIdStudentNumberId(studentDTO.getId().getStudentNumberId())
                 .orElseThrow(() -> new Exception("Student doesn't exist!"));
 
         if (studentDTO.getMaskName() != null) student.setMaskName(studentDTO.getMaskName());
@@ -97,13 +90,13 @@ public class StudentServiceImpl implements StudentService {
         if (studentDTO.getSchool() != null) student.setSchool(studentDTO.getSchool());
 
         final Student studentUpdated = studentRepository.save(student);
-        studentDTO.setStudentId(studentUpdated.getStudentId());
+        studentDTO.setId(studentUpdated.getId());
         return studentDTO;
     }
 
     @Override
     public StudentDTO delete(Long studentNumber) throws Exception {
-        Optional<Student> student = studentRepository.findByIdStudentNumber(studentNumber);
+        Optional<Student> student = studentRepository.findByIdStudentNumberId(studentNumber);
 
         Student toDelete = student.isPresent() ? student.get() :
                 student.orElseThrow(() -> new Exception("Student not found!"));
@@ -146,7 +139,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public SubjectGrades addSubjectGrades(SubjectGradesDTO subjectGradesDTO, Long studentNumber) throws Exception {
-        Student student = studentRepository.findByIdStudentNumber(studentNumber)
+        Student student = studentRepository.findByIdStudentNumberId(studentNumber)
                 .orElseThrow(() -> new IllegalStateException("Student #" + studentNumber + " doesn't exists!"));
 
         SubjectGrades subjectGrades = new SubjectGrades();
@@ -164,7 +157,7 @@ public class StudentServiceImpl implements StudentService {
     //More like of an update
     @Override
     public Boolean removeSubjectGrades(Long subjectGradeId, Long studentNumber) throws Exception {
-        Student student = studentRepository.findByIdStudentNumber(studentNumber)
+        Student student = studentRepository.findByIdStudentNumberId(studentNumber)
                 .orElseThrow(() -> new Exception("Student cannot be found"));
 
         for (SubjectGrades subjectGrades1 : student.getSubjectGrades()) {

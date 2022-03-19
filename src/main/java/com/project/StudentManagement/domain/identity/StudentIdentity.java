@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class StudentIdentity implements Serializable {
 
     @NotNull
-    private Long studentNumberID;
+    private Long studentNumberId;
 
     @NotNull
     private String schoolCode;
@@ -25,13 +25,13 @@ public class StudentIdentity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StudentIdentity that = (StudentIdentity) o;
-        if (!studentNumberID.equals(that.studentNumberID)) return false;
+        if (!studentNumberId.equals(that.studentNumberId)) return false;
         return schoolCode.equals(that.schoolCode);
     }
 
     @Override
     public int hashCode() {
-        int result = studentNumberID.hashCode();
+        int result = studentNumberId.hashCode();
         result = 31 * result + schoolCode.hashCode();
         return result;
     }

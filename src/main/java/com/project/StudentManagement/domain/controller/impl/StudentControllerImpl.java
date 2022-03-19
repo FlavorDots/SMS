@@ -39,7 +39,8 @@ public class StudentControllerImpl implements StudentController {
 
         for (StudentDTO s : studentList){
             Student ss = new Student();
-            ss.setStudentId(s.getStudentId());
+            ss.setId(s.getId());
+            ss.setStudentNumber(s.getId().getStudentNumberId());
             ss.setMaskName(s.getMaskName());
             ss.setFirstName(s.getFirstName());
             ss.setLastName(s.getLastName());
@@ -58,17 +59,17 @@ public class StudentControllerImpl implements StudentController {
     @Override
     @GetMapping(value = "/{studentNumber}", produces = "application/hal+json")
     public StudentDTO getStudentByStudentNumber(@PathVariable("studentNumber") Long studentNumber) {
-        List<StudentDTO> student = studentService.view(studentNumber);
+        StudentDTO student = studentService.view(studentNumber);
         Student student1 = new Student();
-        student1.setStudentId(student.get(0).getStudentId());
-        student1.setMaskName(student.get(0).getMaskName());
-        student1.setFirstName(student.get(0).getFirstName());
-        student1.setLastName(student.get(0).getLastName());
-        student1.setMiddleName(student.get(0).getMiddleName());
-        student1.setSubjectGrades(student.get(0).getSubjectsGrades());
-        student1.setBuddies(student.get(0).getBuddies());
-        student1.setIndividual(student.get(0).getIndividual());
-        student1.setSchool(student.get(0).getSchool());
+        student1.setId(student.getId());
+        student1.setMaskName(student.getMaskName());
+        student1.setFirstName(student.getFirstName());
+        student1.setLastName(student.getLastName());
+        student1.setMiddleName(student.getMiddleName());
+        student1.setSubjectGrades(student.getSubjectsGrades());
+        student1.setBuddies(student.getBuddies());
+        student1.setIndividual(student.getIndividual());
+        student1.setSchool(student.getSchool());
 
         return studentModelAssembler.toModel(student1);
     }
@@ -88,7 +89,7 @@ public class StudentControllerImpl implements StudentController {
     @Override
     @DeleteMapping("/")
     public Map<String, Boolean> deleteStudent(@RequestBody Student student) throws Exception {
-        Long studentNumber = student.getStudentId().getStudentNumberID();
+        Long studentNumber = student.getId().getStudentNumberId();
         studentService.delete(studentNumber);
         Map<String, Boolean> response = new HashMap<>();
         response.put("--Student Deleted--", Boolean.TRUE);

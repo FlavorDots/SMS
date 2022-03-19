@@ -19,10 +19,10 @@ public class Student {
 
     @EmbeddedId
     @Column(name = "ID")
-    private StudentIdentity studentId; //studentnumber + schoolcode
+    private StudentIdentity id; //studentnumber + schoolcode
 
-//    @Column(unique = true, nullable = false)
-//    private Long studentNumber;
+    @Transient
+    private Long studentNumber;
 
     @Column(name = "MASK_NAME", unique = true, nullable = false)
     private String maskName;
@@ -56,7 +56,7 @@ public class Student {
     private School school;
 
     public Student(StudentIdentity studentId, String maskName, String firstName, String lastName, String middleName, School school) {
-        this.studentId = studentId;
+        this.id = studentId;
         this.maskName = maskName;
         this.firstName = firstName;
         this.lastName = lastName;

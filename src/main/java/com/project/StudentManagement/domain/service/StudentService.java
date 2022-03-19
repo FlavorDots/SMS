@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface StudentService {
 
-    List<StudentDTO> view(Long studentNumber);
+    StudentDTO view(Long studentNumber);
 
     List<StudentDTO> list();
 

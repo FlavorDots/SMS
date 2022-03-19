@@ -12,6 +12,7 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "school")
 public class School {

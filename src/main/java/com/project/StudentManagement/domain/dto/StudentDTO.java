@@ -16,7 +16,7 @@ import java.util.*;
 @AllArgsConstructor
 public class StudentDTO extends RepresentationModel<StudentDTO> {
 
-    private StudentIdentity studentId; //studentnumber + schoolcode
+    private StudentIdentity id; //studentnumber + schoolcode
 
     private Long studentNumber;
 

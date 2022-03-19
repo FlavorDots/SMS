@@ -7,7 +7,6 @@ import com.project.StudentManagement.domain.dto.StudentDTO;
 import com.project.StudentManagement.domain.entity.Student;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ public class StudentModelAssembler
         ModelMapper modelMapper = new ModelMapper();
         StudentDTO studentDTO = modelMapper.map(entity, StudentDTO.class);
 
-        Link selfLink = linkTo(methodOn(StudentController.class).getStudentByStudentNumber(entity.getStudentId().getStudentNumberID()))
+        Link selfLink = linkTo(methodOn(StudentController.class).getStudentByStudentNumber(entity.getId().getStudentNumberId()))
                 .withSelfRel();
         studentDTO.add(selfLink);
 
