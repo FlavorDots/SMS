@@ -15,7 +15,7 @@ public interface SchoolService {
 
     SchoolDTO update(SchoolDTO schoolDTO) throws Exception;
 
-    SchoolDTO delete(Long id) throws Exception;
+    void delete(Long id) throws Exception;
 
-    List<StudentDTO> showStudents(String code);
+    List<StudentDTO> showStudents(String code) throws Exception;
 }

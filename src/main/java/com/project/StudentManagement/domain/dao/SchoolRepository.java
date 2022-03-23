@@ -11,4 +11,6 @@ public interface SchoolRepository extends JpaRepository<School, Long> {
 
     Optional<School> findById(Long id);
 
+    Optional<School> findByCode(String code);
+
 }

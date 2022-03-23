@@ -8,6 +8,7 @@ import com.project.StudentManagement.domain.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public class SchoolServiceImpl implements SchoolService {
         Optional<School> school = Optional.ofNullable(schoolRepository.findById(schoolDTO.getId())
                 .orElseThrow(() -> new Exception("Doesn't Exist")));
 
-        if (school.isPresent()){
+        if (school.isPresent()) {
             School school1 = school.get();
 
             SchoolDTO createSchool = new SchoolDTO();
@@ -71,16 +72,48 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolDTO update(SchoolDTO schoolDTO) throws Exception {
-        return null;
+        Optional<School> school = Optional.ofNullable(schoolRepository.findById(schoolDTO.getId())
+                .orElseThrow(() -> new Exception("Cannot be found")));
+
+        School updateSchool = school.get();
+
+        if (schoolDTO.getName() != null) updateSchool.setName(schoolDTO.getName());
+        if (schoolDTO.getAddress() != null) updateSchool.setAddress(schoolDTO.getAddress());
+
+        final School schoolUpdated = schoolRepository.save(updateSchool);
+        schoolDTO.setId(schoolUpdated.getId());
+
+        return schoolDTO;
     }
 
     @Override
-    public SchoolDTO delete(Long id) throws Exception {
-        return null;
+    public void delete(Long id) throws Exception {
+        Optional<School> school = schoolRepository.findById(id);
+
+        School deleteSchool =
+                school.isPresent() ? school.get() :
+                        school.orElseThrow(() -> new Exception("Not found"));
+
+        schoolRepository.delete(deleteSchool);
     }
 
     @Override
-    public List<StudentDTO> showStudents(String code) {
-        return null;
+    public List<StudentDTO> showStudents(String code) throws Exception {
+        Optional<School> school = schoolRepository.findByCode(code);
+
+        School school1 = school.isPresent() ?
+                school.get() :
+                school.orElseThrow(() -> new Exception("Not Found"));
+
+        return school1.getStudent().stream().map(s -> {
+            StudentDTO studentDTO = new StudentDTO();
+            studentDTO.setStudentNumber(s.getStudentNumber());
+            studentDTO.setMaskName(s.getMaskName());
+            studentDTO.setFirstName(s.getFirstName());
+            studentDTO.setLastName(s.getLastName());
+            studentDTO.setMiddleName(s.getMiddleName());
+            studentDTO.setSchool(s.getSchool());
+            return studentDTO;
+        }).collect(Collectors.toList());
     }
 }
