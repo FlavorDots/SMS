@@ -17,6 +17,8 @@ public interface StudentService {
 
     StudentDTO update(StudentDTO studentDTO) throws Exception;
 
+    StudentDTO updateStudent(StudentDTO studentDTO) throws Exception;
+
     StudentDTO delete(Long studentNumber) throws Exception;
 
     Student addBuddy(String buddyMask, String userMask) throws Exception;

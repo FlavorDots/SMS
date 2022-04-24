@@ -6,7 +6,9 @@ import com.project.StudentManagement.domain.entity.Student;
 import com.project.StudentManagement.domain.entity.SubjectGrades;
 import com.project.StudentManagement.domain.dao.StudentRepository;
 import com.project.StudentManagement.domain.identity.StudentIdentity;
+import com.project.StudentManagement.domain.mapper.StudentMapper;
 import com.project.StudentManagement.domain.service.StudentService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StudentServiceImpl implements StudentService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentServiceImpl.class);
@@ -25,11 +28,14 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     StudentRepository studentRepository;
 
+    @Autowired
+    StudentMapper studentMapper;
+
+
     @Override
     public StudentDTO view(Long studentNumber) {
         Student student = studentRepository.findByIdStudentNumberId(studentNumber)
                 .orElseThrow(() -> new IllegalStateException("Student #" + studentNumber + " doesn't exist!"));
-
         StudentDTO studentDTO = new StudentDTO();
         studentDTO.setId(student.getId());
         studentDTO.setStudentNumber(student.getId().getStudentNumberId());
@@ -80,9 +86,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO update(StudentDTO studentDTO) throws Exception {
-        Student student = studentRepository.findByIdStudentNumberId(studentDTO.getId().getStudentNumberId())
-                .orElseThrow(() -> new Exception("Student doesn't exist!"));
+        System.out.println(studentDTO.getId());
+        Optional<Student> updateStud = studentRepository.findById(studentDTO.getId());
 
+        Student student = updateStud.get();
         if (studentDTO.getMaskName() != null) student.setMaskName(studentDTO.getMaskName());
         if (studentDTO.getFirstName() != null) student.setFirstName(studentDTO.getFirstName());
         if (studentDTO.getLastName() != null) student.setLastName(studentDTO.getLastName());
@@ -91,6 +98,20 @@ public class StudentServiceImpl implements StudentService {
 
         final Student studentUpdated = studentRepository.save(student);
         studentDTO.setId(studentUpdated.getId());
+        return studentDTO;
+    }
+
+    @Override
+    public StudentDTO updateStudent(StudentDTO studentDTO) throws Exception{
+//        Student student = studentRepository.findByIdStudentNumberId(studentDTO.getId().getStudentNumberId())
+//                .orElseThrow(() -> new Exception("Student doesn't exist!"));
+
+
+        Optional<Student> studentUpd = studentRepository.findById(studentDTO.getId());
+        Student student = studentUpd.get();
+
+        studentMapper.updateStudentFromDto(studentDTO, student);
+        studentRepository.save(student);
         return studentDTO;
     }
 

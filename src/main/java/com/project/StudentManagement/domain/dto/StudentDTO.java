@@ -14,6 +14,7 @@ import java.util.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class StudentDTO extends RepresentationModel<StudentDTO> {
 
     private StudentIdentity id; //studentnumber + schoolcode

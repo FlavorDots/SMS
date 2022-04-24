@@ -16,4 +16,6 @@ public interface StudentRepository extends
 //    Boolean existsByStudentNumber(Long studentNumber);
 
     Optional<Student> findByMaskName(String maskName);
+
+    Student findByFirstName(String studentNumber);
 }
